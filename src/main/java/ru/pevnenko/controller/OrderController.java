@@ -4,10 +4,13 @@ package ru.pevnenko.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import ru.pevnenko.model.Order;
+import ru.pevnenko.model.Product;
 import ru.pevnenko.service.OrderService;
+import ru.pevnenko.service.ProductService;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +20,9 @@ import java.util.Optional;
 public class OrderController {
 
     private final OrderService orderService;
+
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     public OrderController(OrderService orderService) {
@@ -55,6 +61,14 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/create/{productId}")
+    public String showOrderForm(@PathVariable Long productId, Model model) {
+        Product product = productService.getProductById(productId).orElseThrow();
+        model.addAttribute("product", product);
+        return "order-form";
     }
 }
 
